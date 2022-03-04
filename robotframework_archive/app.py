@@ -30,6 +30,24 @@ def sf_historic_home():
 def redirect_url():
     return render_template('redirect.html')
 
+@app.route('/hsnew', methods=['GET', 'POST'])
+def hs_add_new():
+    if request.method == "POST":
+        db_name = request.form['dbname']
+        cursor = mysql.connection.cursor()
+
+        try:
+            # update created database info in robothistoric.project table
+            cursor.execute("INSERT INTO rfarchive.project ( pid, name, image, created, updated, total, percentage) VALUES (0, '%s', '%s', NOW(), NOW(), 0, 0);" % (db_name, db_image))
+            mysql.connection.commit()
+        except Exception as e:
+            print(str(e))
+
+        finally:
+            return redirect(url_for('home'))
+    else:
+        return render_template('hsnew.html')
+
 def main():
     args = parse_options()
     app.config['MYSQL_HOST'] = args.sqlhost
