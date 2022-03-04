@@ -14,6 +14,18 @@ mysql = MySQL(app)
 def index():
     return render_template('index.html')
 
+@app.route('/historic')
+def historic_home():
+    return render_template('historic/home.html')
+
+@app.route('/sp_historic')
+def sp_historic_home():
+    return render_template('sp_historic/home.html')
+
+@app.route('/sf_historic')
+def sf_historic_home():
+    return render_template('sf_historic/home.html')
+
 @app.route('/redirect')
 def redirect_url():
     return render_template('redirect.html')
