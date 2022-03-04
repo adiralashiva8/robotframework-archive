@@ -1,0 +1,2 @@
+recursive-include robotframework_archive/ *
+include MANIFEST.in
