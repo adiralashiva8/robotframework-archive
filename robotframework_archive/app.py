@@ -51,7 +51,7 @@ def hs_add_new():
             print(str(e))
 
         finally:
-            return redirect(url_for('hshome'))
+            return redirect(url_for('historic_home'))
     else:
         return render_template('hsnew.html')
 
@@ -74,7 +74,7 @@ def sp_add_new():
             print(str(e))
 
         finally:
-            return redirect(url_for('sphome'))
+            return redirect(url_for('sp_historic_home'))
     else:
         return render_template('spnew.html')
 
@@ -97,7 +97,7 @@ def sf_add_new():
             print(str(e))
 
         finally:
-            return redirect(url_for('sfhome'))
+            return redirect(url_for('sf_historic_home'))
     else:
         return render_template('sfnew.html')
 
