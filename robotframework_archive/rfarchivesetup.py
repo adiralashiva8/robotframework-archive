@@ -20,9 +20,17 @@ def rfarchive_setup(opts):
     rfdb = connect_to_mysql_db(opts.host, opts.username, opts.password, "rfarchive")
     try:
         rfobj = rfdb.cursor()
-        rfobj.execute("CREATE TABLE IF NOT EXISTS project ( pid INT NOT NULL auto_increment primary key, name TEXT, image TEXT, created DATETIME, updated DATETIME, total INT, percentage FLOAT);")
-        rfobj.execute("CREATE TABLE IF NOT EXISTS execution ( eid INT NOT NULL auto_increment primary key, pid INT, description TEXT, time DATETIME, total INT, pass INT, fail INT, skip INT, etime TEXT);")
-        rfobj.execute("CREATE TABLE IF NOT EXISTS test ( tid INT NOT NULL auto_increment primary key, eid INT, pid INT, name TEXT, status TEXT, time TEXT, error TEXT, comment TEXT, assigned TEXT, eta TEXT, review TEXT, type TEXT, tag TEXT, updated DATETIME);")
+        rfobj.execute("CREATE TABLE IF NOT EXISTS hsproject ( pid INT NOT NULL auto_increment primary key, name TEXT, description TEXT, created DATETIME, updated DATETIME, total INT, percentage FLOAT);")
+        rfobj.execute("CREATE TABLE IF NOT EXISTS hsexecution ( eid INT NOT NULL auto_increment primary key, pid INT, description TEXT, time DATETIME, total INT, pass INT, fail INT, skip INT, etime TEXT);")
+        rfobj.execute("CREATE TABLE IF NOT EXISTS hstest ( tid INT NOT NULL auto_increment primary key, eid INT, pid INT, name TEXT, status TEXT, time TEXT, error TEXT, comment TEXT, assigned TEXT, eta TEXT, review TEXT, type TEXT, tag TEXT, updated DATETIME);")
+        # snow project
+        rfobj.execute("CREATE TABLE IF NOT EXISTS spproject ( pid INT NOT NULL auto_increment primary key, name TEXT, description TEXT, created DATETIME, updated DATETIME, total INT);")
+        rfobj.execute("CREATE TABLE IF NOT EXISTS spexecution ( eid INT NOT NULL auto_increment primary key, pid INT, description TEXT, time DATETIME);")
+        rfobj.execute("CREATE TABLE IF NOT EXISTS sptest ( tid INT NOT NULL auto_increment primary key, eid INT, pid INT, name TEXT, browser_time FLOAT, client_response_time FLOAT, response_time FLOAT, sql_count FLOAT, sql_time FLOAT);")
+        # sf project 
+        rfobj.execute("CREATE TABLE IF NOT EXISTS sfproject ( pid INT NOT NULL auto_increment primary key, name TEXT, description TEXT, created DATETIME, updated DATETIME, total INT);")
+        rfobj.execute("CREATE TABLE IF NOT EXISTS sfexecution ( eid INT NOT NULL auto_increment primary key, pid INT, description TEXT, time DATETIME);")
+        rfobj.execute("CREATE TABLE IF NOT EXISTS sftest ( tid INT NOT NULL auto_increment primary key, eid INT, pid INT, name TEXT, ept_time FLOAT);")
     except Exception as e:
         print(str(e))
 

@@ -40,11 +40,12 @@ def redirect_url():
 def hs_add_new():
     if request.method == "POST":
         db_name = request.form['dbname']
+        db_desc = request.form['dbdesc']
         cursor = mysql.connection.cursor()
 
         try:
             # update created database info in robothistoric.project table
-            cursor.execute("INSERT INTO rfarchive.project ( pid, name, image, created, updated, total, percentage) VALUES (0, '%s', '%s', NOW(), NOW(), 0, 0);" % (db_name, db_image))
+            cursor.execute("INSERT INTO rfarchive.project ( pid, name, description, created, updated, total, percentage) VALUES (0, '%s', '%s', NOW(), NOW(), 0, 0);" % (db_name, db_desc))
             mysql.connection.commit()
         except Exception as e:
             print(str(e))
@@ -62,11 +63,12 @@ def hs_add_new():
 def sp_add_new():
     if request.method == "POST":
         db_name = request.form['dbname']
+        db_desc = request.form['dbdesc']
         cursor = mysql.connection.cursor()
 
         try:
             # update created database info in robothistoric.project table
-            cursor.execute("INSERT INTO rfarchive.project ( pid, name, image, created, updated, total, percentage) VALUES (0, '%s', '%s', NOW(), NOW(), 0, 0);" % (db_name, db_image))
+            cursor.execute("INSERT INTO rfarchive.project ( pid, name, description, created, updated, total) VALUES (0, '%s', '%s', NOW(), NOW(), 0);" % (db_name, db_desc))
             mysql.connection.commit()
         except Exception as e:
             print(str(e))
@@ -84,11 +86,12 @@ def sp_add_new():
 def sf_add_new():
     if request.method == "POST":
         db_name = request.form['dbname']
+        db_desc = request.form['dbdesc']
         cursor = mysql.connection.cursor()
 
         try:
             # update created database info in robothistoric.project table
-            cursor.execute("INSERT INTO rfarchive.project ( pid, name, image, created, updated, total, percentage) VALUES (0, '%s', '%s', NOW(), NOW(), 0, 0);" % (db_name, db_image))
+            cursor.execute("INSERT INTO rfarchive.project ( pid, name, description, created, updated, total) VALUES (0, '%s', '%s', NOW(), NOW(), 0);" % (db_name, db_desc))
             mysql.connection.commit()
         except Exception as e:
             print(str(e))
