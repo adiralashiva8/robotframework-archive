@@ -18,14 +18,14 @@ def parse_options():
     general.add_argument(
         '-u', '--username',
         dest='username',
-        default='superuser',
+        default='root',
         help="MySQL db user name"
     )
 
     general.add_argument(
         '-p', '--password',
         dest='password',
-        default='passw0rd',
+        default='123456',
         help="MySQL db password"
     )
 
@@ -38,7 +38,7 @@ def parse_options():
     general.add_argument(
         '-o', '--output',
         dest='output',
-        help="Name of excel file"
+        help="Name of csv file"
     )
 
     general.add_argument(
