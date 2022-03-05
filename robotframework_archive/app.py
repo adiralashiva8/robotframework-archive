@@ -12,19 +12,19 @@ mysql = MySQL(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('home.html')
 
-@app.route('/historic')
+@app.route('/hshome')
 def historic_home():
-    return render_template('historic/home.html')
+    return render_template('hshome.html')
 
-@app.route('/sp_historic')
+@app.route('/sphome')
 def sp_historic_home():
-    return render_template('sp_historic/home.html')
+    return render_template('sphome.html')
 
-@app.route('/sf_historic')
+@app.route('/sfhome')
 def sf_historic_home():
-    return render_template('sf_historic/home.html')
+    return render_template('sfhome.html')
 
 @app.route('/redirect')
 def redirect_url():
