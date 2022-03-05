@@ -18,7 +18,7 @@ def sphistoric_parser(opts):
     print("Capturing execution results, This may take few minutes...")
 
     # connect to database
-    rootdb = connect_to_mysql_db(opts.host, opts.username, opts.password, 'sphistoric')
+    rootdb = connect_to_mysql_db(opts.host, opts.username, opts.password, 'rfarchive')
 
     # insert test results info into db
     df = pd.read_excel(opts.output)
