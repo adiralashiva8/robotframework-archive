@@ -14,6 +14,10 @@ mysql = MySQL(app)
 def index():
     return render_template('home.html')
 
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
 @app.route('/hshome')
 def historic_home():
     return render_template('hshome.html')
@@ -30,6 +34,8 @@ def sf_historic_home():
 def redirect_url():
     return render_template('redirect.html')
 
+##### Historic Report Start ####
+
 @app.route('/hsnew', methods=['GET', 'POST'])
 def hs_add_new():
     if request.method == "POST":
@@ -44,9 +50,55 @@ def hs_add_new():
             print(str(e))
 
         finally:
-            return redirect(url_for('home'))
+            return redirect(url_for('hshome'))
     else:
         return render_template('hsnew.html')
+
+##### Historic Report End ####
+
+####  Snow Report Start ####
+
+@app.route('/spnew', methods=['GET', 'POST'])
+def sp_add_new():
+    if request.method == "POST":
+        db_name = request.form['dbname']
+        cursor = mysql.connection.cursor()
+
+        try:
+            # update created database info in robothistoric.project table
+            cursor.execute("INSERT INTO rfarchive.project ( pid, name, image, created, updated, total, percentage) VALUES (0, '%s', '%s', NOW(), NOW(), 0, 0);" % (db_name, db_image))
+            mysql.connection.commit()
+        except Exception as e:
+            print(str(e))
+
+        finally:
+            return redirect(url_for('sphome'))
+    else:
+        return render_template('spnew.html')
+
+#### Snow Report End ####
+
+#### SF Report Start ####
+
+@app.route('/sfnew', methods=['GET', 'POST'])
+def sf_add_new():
+    if request.method == "POST":
+        db_name = request.form['dbname']
+        cursor = mysql.connection.cursor()
+
+        try:
+            # update created database info in robothistoric.project table
+            cursor.execute("INSERT INTO rfarchive.project ( pid, name, image, created, updated, total, percentage) VALUES (0, '%s', '%s', NOW(), NOW(), 0, 0);" % (db_name, db_image))
+            mysql.connection.commit()
+        except Exception as e:
+            print(str(e))
+
+        finally:
+            return redirect(url_for('sfhome'))
+    else:
+        return render_template('sfnew.html')
+
+#### SF Report End ####
 
 def main():
     args = parse_options()
