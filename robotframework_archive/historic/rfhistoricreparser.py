@@ -121,7 +121,7 @@ def update_execution_table(con, eid, pid):
     cursorObj.execute("SELECT eid, pass, total FROM rfarchive.hsexecution ORDER BY eid DESC LIMIT 1;")
     rows = cursorObj.fetchone()
     # update rfarchive.TB_PROJECT table
-    cursorObj.execute("UPDATE rfarchive.hsproject SET Last_Updated = now(), total = %s, percentage =%s WHERE pid='%s';" % (rows[2], float("{0:.2f}".format((rows[1]/rows[2]*100))), pid))
+    cursorObj.execute("UPDATE rfarchive.hsproject SET updated = now(), total = %s, percentage =%s WHERE pid='%s';" % (rows[2], float("{0:.2f}".format((rows[1]/rows[2]*100))), pid))
     con.commit()
     return str(rows[0])
 
