@@ -595,6 +595,259 @@ def sp_delete_db(db):
     mysql.connection.commit()
     return redirect(url_for('sp_historic_home'))
 
+@app.route('/<db>/spsearch', methods=['GET', 'POST'])
+def spsearch(db):
+    if request.method == "POST":
+        search = request.form['search']
+        cursor = mysql.connection.cursor()
+        # use_db(cursor, db)
+        try:
+            if search:
+                cursor.execute("SELECT * from rfarchive.sptest WHERE (pid={pid}) and (name LIKE '%{name}%' OR status LIKE '%{name}%' OR eid LIKE '%{name}%') ORDER BY eid DESC LIMIT 500;".format(name=search, pid=db))
+                data = cursor.fetchall()
+                return render_template('spsearch.html', data=data, db_name=db, error_message="")
+            else:
+                return render_template('spsearch.html', db_name=db, error_message="Search text should not be empty")
+        except Exception as e:
+            print(str(e))
+            return render_template('spsearch.html', db_name=db, error_message="Could not perform search. Avoid single quote in search or use escaping character")
+    else:
+        return render_template('spsearch.html', db_name=db, error_message="")
+
+@app.route('/<db>/spehistoric', methods=['GET'])
+def spehistoric(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    cursor.execute("SELECT * from rfarchive.spexecution WHERE pid=%s order by eid desc LIMIT 500;" % (db))
+    data = cursor.fetchall()
+    return render_template('spehistoric.html', data=data, db_name=db)
+
+@app.route('/<db>/spdeleconf/<eid>', methods=['GET'])
+def delete_eid_conf(db, eid):
+    return render_template('spdeleconf.html', db_name = db, eid = eid)
+
+@app.route('/<db>/spedelete/<eid>', methods=['GET'])
+def spdelete_eid(db, eid):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    # remove execution from tables: execution, suite, test
+    cursor.execute("DELETE FROM rfarchive.spexecution WHERE eid='%s' AND pid='%s';" % (eid, db))
+    cursor.execute("DELETE FROM rfarchive.sptest WHERE eid='%s' AND pid='%s';" % (eid, db))
+    # get no. of executions
+    cursor.execute("SELECT COUNT(*) from rfarchive.spexecution WHERE pid='%s';" % (db))
+    exe_data = cursor.fetchall()
+
+    # update sphistoric project
+    cursor.execute("UPDATE rfarchive.spproject SET total=%s, updated=now() WHERE pid='%s';" % (int(exe_data[0][0]), db))
+    # commit changes
+    mysql.connection.commit()
+    return redirect(url_for('spehistoric', db = db))
+
+@app.route('/<db>/spmetrics/<eid>', methods=['GET'])
+def spmetrics(db, eid):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    # Get testcase results of execution id
+    cursor.execute("SELECT * from rfarchive.sptest WHERE eid=%s;" % eid)
+    test_data = cursor.fetchall()
+    # get suite results of execution id
+    cursor.execute("SELECT * from rfarchive.spexecution WHERE eid=%s;" % eid)
+    exe_data = cursor.fetchall()
+    return render_template('spmetrics.html', exe_data=exe_data, test_data=test_data)
+
+@app.route('/<db>/spcmetrics', methods=['GET'])
+def spcmetrics(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    eid_one = request.args.get('eid_one')
+    eid_two = request.args.get('eid_two')
+    # Get testcase results of execution id
+    cursor.execute("SELECT * from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_one, db))
+    test_data_1 = cursor.fetchall()
+    cursor.execute("SELECT * from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_two, db))
+    test_data_2 = cursor.fetchall()
+    # get suite results of execution id
+    cursor.execute("SELECT * from rfarchive.spexecution WHERE eid=%s;" % eid_one)
+    exe_data_1 = cursor.fetchall()
+    cursor.execute("SELECT * from rfarchive.spexecution WHERE eid=%s;" % eid_two)
+    exe_data_2 = cursor.fetchall()
+    return render_template('spcmetrics.html', exe_data_1=exe_data_1, exe_data_2=exe_data_2, test_data_1=test_data_1, test_data_2=test_data_2)
+
+@app.route('/<db>/sptmetrics', methods=['GET', 'POST'])
+def sptmetrics(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+
+    # Get last row execution ID
+    cursor.execute("SELECT eid from rfarchive.spexecution WHERE pid=%s order by eid desc LIMIT 1;" % db)
+    data = cursor.fetchone()
+    # Get testcase results of execution id (typically last executed)
+    cursor.execute("SELECT * from rfarchive.sptest WHERE eid=%s;" % data)
+    data = cursor.fetchall()
+    return render_template('sptmetrics.html', data=data, db_name=db)
+
+@app.route('/<db>/sptmetrics/<eid>', methods=['GET', 'POST'])
+def eid_tmetrics(db, eid):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+
+    # Get testcase results of execution id (typically last executed)
+    cursor.execute("SELECT * from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid, db))
+    data = cursor.fetchall()
+    return render_template('speidtmetrics.html', data=data, db_name=db)
+
+@app.route('/<db>/spcompare', methods=['GET', 'POST'])
+def spcompare(db):
+    if request.method == "POST":
+        eid_one = request.form['eid_one']
+        eid_two = request.form['eid_two']
+        cursor = mysql.connection.cursor()
+        use_db(cursor, db)
+        # fetch first eid tets results
+        cursor.execute("SELECT name, eid, client_response_time, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_one, db) )
+        first_data = cursor.fetchall()
+        # fetch second eid test results
+        cursor.execute("SELECT name, eid, client_response_time, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_two, db) )
+        second_data = cursor.fetchall()
+        if first_data and second_data:
+            # combine both tuples
+            data = first_data + second_data
+            sorted_data = sort_tests(data)
+            return render_template('spcompare.html', data=sorted_data, db_name=db, fb = first_data, sb = second_data,
+             eid_one = eid_one, eid_two = eid_two, error_message="", show_link=1)
+        else:
+            return render_template('spcompare.html', db_name=db, error_message="EID not found, try with existing EID", show_link=0)    
+    else:
+        return render_template('spcompare.html', db_name=db, error_message="", show_link=0)
+
+@app.route('/<db>/spdashboardRecent', methods=['GET'])
+def spdashboardRecent(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+
+    cursor.execute("SELECT COUNT(eid) from rfarchive.spexecution WHERE pid=%s;" % db)
+    results_data = cursor.fetchall()
+    cursor.execute("SELECT COUNT(tid) from rfarchive.sptest WHERE pid=%s;" % db)
+    test_results_data = cursor.fetchall()
+
+    if results_data[0][0] > 0 and test_results_data[0][0] > 0:
+
+        cursor.execute("SELECT eid from rfarchive.spexecution WHERE pid=%s order by eid desc LIMIT 2;" % db)
+        exe_info = cursor.fetchall()
+
+        if len(exe_info) == 1:
+            pass
+        else:
+            exe_info = (exe_info[0], exe_info[0])
+        
+        cursor.execute("SELECT * from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (exe_info[0], db))
+        last_exe_data = cursor.fetchall()
+
+        cursor.execute("SELECT name, client_response_time from rfarchive.sptest WHERE eid=%s AND pid=%s order by client_response_time desc LIMIT 5;" % (exe_info[0], db))
+        crt_data = cursor.fetchall()
+
+        cursor.execute("SELECT name, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s order by sql_time desc LIMIT 5;" % (exe_info[0], db))
+        sqlt_data = cursor.fetchall()
+
+        cursor.execute("SELECT COUNT(name) from rfarchive.sptest WHERE eid=%s" % exe_info[0])
+        tables_data = cursor.fetchall()
+
+        cursor.execute("SELECT ROUND(SUM(client_response_time),2) from rfarchive.sptest WHERE eid=%s" % exe_info[0])
+        scrt_data = cursor.fetchall()
+
+        cursor.execute("SELECT ROUND(SUM(sql_time),2) from rfarchive.sptest WHERE eid=%s" % exe_info[0])
+        ssqlt_data = cursor.fetchall()
+
+        cursor.execute("SELECT description, time from rfarchive.spexecution WHERE eid=%s;" % exe_info[0])
+        desc_data = cursor.fetchall()
+        app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
+
+        return render_template('spdashboardRecent.html', last_exe_data=last_exe_data, exe_info=exe_info, db_name=db,
+         crt_data=crt_data, tables_data=tables_data, sqlt_data=sqlt_data, scrt_data=scrt_data, ssqlt_data=ssqlt_data, app_version_data=app_version_data)    
+    else:
+        return redirect(url_for('redirect_url'))
+
+
+@app.route('/<db>/spdashboardRecentTwo', methods=['GET', 'POST'])
+def spdashboardRecentTwo(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    cursor.execute("SELECT COUNT(eid) from rfarchive.spexecution WHERE pid=%s;" % db)
+    results_data = cursor.fetchall()
+    cursor.execute("SELECT COUNT(tid) from rfarchive.sptest WHERE pid=%s;" % db)
+    test_results_data = cursor.fetchall()
+
+    if results_data[0][0] > 0 and test_results_data[0][0] > 0:
+
+        if request.method == "POST":
+            eid_one = request.form['eid_one']
+            eid_two = request.form['eid_two']
+            # fetch first eid tets results
+            cursor.execute("SELECT name, eid, client_response_time, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_one, db) )
+            first_data = cursor.fetchall()
+            # fetch second eid test results
+            cursor.execute("SELECT name, eid, client_response_time, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_two, db) )
+            second_data = cursor.fetchall()
+
+            cursor.execute("SELECT Execution_Desc, Execution_Date from rfarchive.spexecution WHERE eid=%s;" % eid_one)
+            desc_data = cursor.fetchall()
+            one_app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
+
+            cursor.execute("SELECT description, time from rfarchive.spexecution WHERE eid=%s AND pid=%s;" % (eid_two, db))
+            desc_data = cursor.fetchall()
+            two_app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
+
+            if first_data and second_data:
+                # combine both tuples
+                data = first_data + second_data
+                sorted_data = sort_tests(data)
+                # print(sorted_data)
+                return render_template('spdashboardRecentTwo.html', data=sorted_data, db_name=db, fb = first_data, sb = second_data,
+                 eid_one = eid_one, eid_two = eid_two, one_app_version_data=one_app_version_data,
+                  two_app_version_data=two_app_version_data, error_message="", show_link=1)
+            else:
+                return render_template('spdashboardRecentTwo.html', db_name=db, error_message="EID not found, try with existing EID", show_link=0)    
+        else:
+            cursor.execute("SELECT eid from rfarchive.spexecution WHERE pid=%s order by eid desc LIMIT 2;" % (db))
+            exe_info = cursor.fetchall()
+
+            if len(exe_info) >= 2:
+                exe_info = (exe_info[0][0], exe_info[1][0])
+            else:
+                exe_info = (exe_info[0][0], exe_info[0][0])
+
+            eid_one = exe_info[0]
+            eid_two = exe_info[1]
+            # fetch first eid tets results
+            cursor.execute("SELECT name, eid, client_response_time, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_one, db) )
+            first_data = cursor.fetchall()
+            # fetch second eid test results
+            cursor.execute("SELECT name, eid, client_response_time, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_two, db) )
+            second_data = cursor.fetchall()
+
+            cursor.execute("SELECT Execution_Desc, Execution_Date from rfarchive.spexecution WHERE eid=%s;" % eid_one)
+            desc_data = cursor.fetchall()
+            one_app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
+
+            cursor.execute("SELECT description, time from rfarchive.spexecution WHERE eid=%s AND pid=%s;" % (eid_two, db))
+            desc_data = cursor.fetchall()
+            two_app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
+
+            if first_data and second_data:
+                # combine both tuples
+                data = first_data + second_data
+                sorted_data = sort_tests(data)
+                # print(sorted_data)
+                return render_template('spdashboardRecentTwo.html', data=sorted_data, db_name=db, fb = first_data, sb = second_data,
+                 eid_one = eid_one, eid_two = eid_two, one_app_version_data=one_app_version_data,
+                  two_app_version_data=two_app_version_data, error_message="", show_link=1)
+            else:
+                return render_template('spdashboardRecentTwo.html', db_name=db, error_message="EID not found, try with existing EID", show_link=0)
+
+    else:
+        return redirect(url_for('redirect_url'))
+
+
 #### Snow Report End ####
 
 #### SF Report Start ####
