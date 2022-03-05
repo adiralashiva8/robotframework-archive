@@ -603,7 +603,7 @@ def spsearch(db):
         # use_db(cursor, db)
         try:
             if search:
-                cursor.execute("SELECT * from rfarchive.sptest WHERE (pid={pid}) and (name LIKE '%{name}%' OR status LIKE '%{name}%' OR eid LIKE '%{name}%') ORDER BY eid DESC LIMIT 500;".format(name=search, pid=db))
+                cursor.execute("SELECT * from rfarchive.sptest WHERE (pid={pid}) and (name LIKE '%{name}%' OR eid LIKE '%{name}%') ORDER BY eid DESC LIMIT 500;".format(name=search, pid=db))
                 data = cursor.fetchall()
                 return render_template('spsearch.html', data=data, db_name=db, error_message="")
             else:
@@ -702,7 +702,7 @@ def spcompare(db):
         eid_one = request.form['eid_one']
         eid_two = request.form['eid_two']
         cursor = mysql.connection.cursor()
-        use_db(cursor, db)
+        # use_db(cursor, db)
         # fetch first eid tets results
         cursor.execute("SELECT name, eid, client_response_time, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_one, db) )
         first_data = cursor.fetchall()
@@ -740,6 +740,7 @@ def spdashboardRecent(db):
         else:
             exe_info = (exe_info[0], exe_info[0])
         
+        print(exe_info[0])
         cursor.execute("SELECT * from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (exe_info[0], db))
         last_exe_data = cursor.fetchall()
 

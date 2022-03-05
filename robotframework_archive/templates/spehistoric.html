@@ -93,15 +93,15 @@
                                         {% for item in data %}
                                         <tr>
                                             <td title="Click to view {{item[0]}} execution info"><a href="./sptmetrics/{{item[0]}}" target="_blank">{{item[0]}}</a></td>
-                                            <td>{{item[1]}}</td>
+                                            <td>{{item[3]}}</td>
                                             <td style="word-wrap: break-word; max-width: 250px; white-space: normal; text-align: left;">{{item[2]}}</td>
 
                                             <td class="text-right">
                                                 <span class="dropdown ml-1">
                                                     <button class="btn btn-white btn-sm dropdown-toggle align-text-top" data-boundary="viewport" data-toggle="dropdown">Actions</button>
                                                     <div class="dropdown-menu dropdown-menu-right">
-                                                        <a class="dropdown-item" style="color:blue" href="./deleconf/{{item[0]}}">Delete Execution</a>
-                                                        <a class="dropdown-item" style="color:blue" href="./metrics/{{item[0]}}" target="_blank">Export</a>
+                                                        <a class="dropdown-item" style="color:blue" href="./spdeleconf/{{item[0]}}">Delete Execution</a>
+                                                        <a class="dropdown-item" style="color:blue" href="./spmetrics/{{item[0]}}" target="_blank">Export</a>
                                                     </div>
                                                 </span>
                                             </td>
