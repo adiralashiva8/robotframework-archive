@@ -18,10 +18,6 @@ def index():
 def home():
     return render_template('home.html')
 
-@app.route('/sfhome')
-def sf_historic_home():
-    return render_template('sfhome.html')
-
 @app.route('/redirect')
 def redirect_url():
     return render_template('redirect.html')
