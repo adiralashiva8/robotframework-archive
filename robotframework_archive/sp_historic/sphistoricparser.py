@@ -18,7 +18,6 @@ def sphistoric_parser(opts):
     print("Capturing execution results, This may take few minutes...")
 
     # connect to database
-    mydb = connect_to_mysql_db(opts.host, opts.username, opts.password, opts.projectname)
     rootdb = connect_to_mysql_db(opts.host, opts.username, opts.password, 'sphistoric')
 
     # insert test results info into db
@@ -29,16 +28,16 @@ def sphistoric_parser(opts):
     for line in table.to_csv(header=False, index=True).split('\n'):
         if line:
             values = line.split(',')
-            result_id = insert_into_execution_table(mydb, rootdb, str(values[1]), opts.projectname)
+            result_id = insert_into_execution_table(rootdb, opts.projectid, str(values[1]))
             break
 
     for line in table.to_csv(header=False, index=True).split('\n'):
         if line:
             values = line.split(',')
-            insert_into_test_table(mydb, result_id, str(values[0]), float(values[2]), float(values[3]), float(values[4]), float(values[5]), float(values[6]))
+            insert_into_test_table(rootdb, result_id, opts.projectid, str(values[0]), float(values[2]), float(values[3]), float(values[4]), float(values[5]), float(values[6]))
 
     print("INFO: Writing execution results to tables")
-    commit_and_close_db(mydb)
+    commit_and_close_db(rootdb)
 
 # other useful methods
 def connect_to_mysql_db(host, user, pwd, db):
@@ -53,26 +52,24 @@ def connect_to_mysql_db(host, user, pwd, db):
     except Exception as e:
         print(e)
 
-def insert_into_execution_table(con, ocon, name, projectname):
+def insert_into_execution_table(con, pid, description):
     cursorObj = con.cursor()
-    rootCursorObj = ocon.cursor()
-    sql = "INSERT INTO rfarchive.spexecution (eid, time, description) VALUES (%s, now(), %s);"
-    val = (0, name)
+    sql = "INSERT INTO rfarchive.spexecution (eid, pid, description, time) VALUES (%s, %s, %s, now());"
+    val = (0, pid, description)
     cursorObj.execute(sql, val)
     con.commit()
-    cursorObj.execute("SELECT eid FROM rfarchive.spexecution ORDER BY eid DESC LIMIT 1;")
+    cursorObj.execute("SELECT eid FROM rfarchive.spexecution WHERE pid='%s' ORDER BY eid DESC LIMIT 1;" % (pid))
     rows = cursorObj.fetchone()
-    cursorObj.execute("SELECT COUNT(*) FROM rfarchive.spexecution;")
+    cursorObj.execute("SELECT COUNT(*) FROM rfarchive.spexecution WHERE pid='%s';" % (pid))
     execution_rows = cursorObj.fetchone()
-    # update sphistoric.TB_PROJECT table
-    rootCursorObj.execute("UPDATE rfarchive.spproject SET updated = now(), total = %s WHERE name='%s';" % (execution_rows[0], projectname))
-    ocon.commit()
+    cursorObj.execute("UPDATE rfarchive.spproject SET updated=now(), total=%s WHERE pid='%s';" % (execution_rows[0], pid))
+    con.commit()
     return str(rows[0])
 
-def insert_into_test_table(con, eid, table_name, browser_time, client_response_time, response_time, sql_count, sql_time):
+def insert_into_test_table(con, eid, pid, table_name, browser_time, client_response_time, response_time, sql_count, sql_time):
     cursorObj = con.cursor()
-    sql = "INSERT INTO rfarchive.sptest (tid, eid, name, browser_time, client_response_time, response_time, sql_count, sql_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    val = (0, eid, table_name, browser_time, client_response_time, response_time, sql_count, sql_time)
+    sql = "INSERT INTO rfarchive.sptest (tid, eid, pid, name, browser_time, client_response_time, response_time, sql_count, sql_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    val = (0, eid, pid, table_name, browser_time, client_response_time, response_time, sql_count, sql_time)
     cursorObj.execute(sql, val)
 
 def commit_and_close_db(db):
