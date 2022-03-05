@@ -32,9 +32,7 @@ setup(
               'rfhsparser=robotframework_archive.historic.parserargs:main',
               'rfhsreparser=robotframework_archive.historic.reparserargs:main',
               'rfspparser=robotframework_archive.sp_historic.parserargs:main',
-              'rfspreparser=robotframework_archive.sp_historic.reparserargs:main',
               'rfsfparser=robotframework_archive.sf_historic.parserargs:main',
-              'rfsfreparser=robotframework_archive.sf_historic.reparserargs:main',
               'rfarchivesetup=robotframework_archive.setupargs:main',
           ]
       },
