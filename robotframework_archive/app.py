@@ -135,6 +135,8 @@ def sf_add_new():
         return render_template('sfnew.html')
 
 #### SF Report End ####
+def use_db(cursor, db_name):
+    cursor.execute("USE %s;" % db_name)
 
 def main():
     args = parse_options()
