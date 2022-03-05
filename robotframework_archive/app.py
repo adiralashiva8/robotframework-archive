@@ -44,8 +44,7 @@ def hs_add_new():
         cursor = mysql.connection.cursor()
 
         try:
-            # update created database info in robothistoric.project table
-            cursor.execute("INSERT INTO rfarchive.project ( pid, name, description, created, updated, total, percentage) VALUES (0, '%s', '%s', NOW(), NOW(), 0, 0);" % (db_name, db_desc))
+            cursor.execute("INSERT INTO rfarchive.hsproject ( pid, name, description, created, updated, total, percentage) VALUES (0, '%s', '%s', NOW(), NOW(), 0, 0);" % (db_name, db_desc))
             mysql.connection.commit()
         except Exception as e:
             print(str(e))
@@ -67,8 +66,7 @@ def sp_add_new():
         cursor = mysql.connection.cursor()
 
         try:
-            # update created database info in robothistoric.project table
-            cursor.execute("INSERT INTO rfarchive.project ( pid, name, description, created, updated, total) VALUES (0, '%s', '%s', NOW(), NOW(), 0);" % (db_name, db_desc))
+            cursor.execute("INSERT INTO rfarchive.spproject ( pid, name, description, created, updated, total) VALUES (0, '%s', '%s', NOW(), NOW(), 0);" % (db_name, db_desc))
             mysql.connection.commit()
         except Exception as e:
             print(str(e))
@@ -90,8 +88,7 @@ def sf_add_new():
         cursor = mysql.connection.cursor()
 
         try:
-            # update created database info in robothistoric.project table
-            cursor.execute("INSERT INTO rfarchive.project ( pid, name, description, created, updated, total) VALUES (0, '%s', '%s', NOW(), NOW(), 0);" % (db_name, db_desc))
+            cursor.execute("INSERT INTO rfarchive.sfproject ( pid, name, description, created, updated, total) VALUES (0, '%s', '%s', NOW(), NOW(), 0);" % (db_name, db_desc))
             mysql.connection.commit()
         except Exception as e:
             print(str(e))
