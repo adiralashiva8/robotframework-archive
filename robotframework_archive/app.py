@@ -740,26 +740,25 @@ def spdashboardRecent(db):
         else:
             exe_info = (exe_info[0], exe_info[0])
         
-        print(exe_info[0])
-        cursor.execute("SELECT * from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (exe_info[0], db))
+        cursor.execute("SELECT * from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (exe_info[0][0], db))
         last_exe_data = cursor.fetchall()
 
-        cursor.execute("SELECT name, client_response_time from rfarchive.sptest WHERE eid=%s AND pid=%s order by client_response_time desc LIMIT 5;" % (exe_info[0], db))
+        cursor.execute("SELECT name, client_response_time from rfarchive.sptest WHERE eid=%s AND pid=%s order by client_response_time desc LIMIT 5;" % (exe_info[0][0], db))
         crt_data = cursor.fetchall()
 
-        cursor.execute("SELECT name, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s order by sql_time desc LIMIT 5;" % (exe_info[0], db))
+        cursor.execute("SELECT name, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s order by sql_time desc LIMIT 5;" % (exe_info[0][0], db))
         sqlt_data = cursor.fetchall()
 
-        cursor.execute("SELECT COUNT(name) from rfarchive.sptest WHERE eid=%s" % exe_info[0])
+        cursor.execute("SELECT COUNT(name) from rfarchive.sptest WHERE eid=%s" % exe_info[0][0])
         tables_data = cursor.fetchall()
 
-        cursor.execute("SELECT ROUND(SUM(client_response_time),2) from rfarchive.sptest WHERE eid=%s" % exe_info[0])
+        cursor.execute("SELECT ROUND(SUM(client_response_time),2) from rfarchive.sptest WHERE eid=%s" % exe_info[0][0])
         scrt_data = cursor.fetchall()
 
-        cursor.execute("SELECT ROUND(SUM(sql_time),2) from rfarchive.sptest WHERE eid=%s" % exe_info[0])
+        cursor.execute("SELECT ROUND(SUM(sql_time),2) from rfarchive.sptest WHERE eid=%s" % exe_info[0][0])
         ssqlt_data = cursor.fetchall()
 
-        cursor.execute("SELECT description, time from rfarchive.spexecution WHERE eid=%s;" % exe_info[0])
+        cursor.execute("SELECT description, time from rfarchive.spexecution WHERE eid=%s;" % exe_info[0][0])
         desc_data = cursor.fetchall()
         app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
 
