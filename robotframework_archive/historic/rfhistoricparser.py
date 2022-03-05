@@ -39,7 +39,7 @@ def rfhistoric_parser(opts):
     print("Capturing execution results, This may take few minutes...")
 
     # connect to database
-    rootdb = connect_to_mysql_db(opts.host, opts.username, opts.password, 'rfarchive2')
+    rootdb = connect_to_mysql_db(opts.host, opts.username, opts.password, 'rfarchive')
 
     stats = result.statistics
     try:
