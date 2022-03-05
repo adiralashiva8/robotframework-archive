@@ -58,6 +58,17 @@ def hs_add_new():
     else:
         return render_template('hsnew.html')
 
+@app.route('/<db>/hsdeldbconf', methods=['GET'])
+def hs_delete_db_conf(db):
+    return render_template('hsdeldbconf.html', db_name = db)
+
+@app.route('/<db>/hsdelete', methods=['GET'])
+def hs_delete_db(db):
+    cursor = mysql.connection.cursor()
+    cursor.execute("DELETE FROM rfarchive.hsproject WHERE pid='%s';" % db)
+    mysql.connection.commit()
+    return redirect(url_for('historic_home'))
+
 ##### Historic Report End ####
 
 ####  Snow Report Start ####
@@ -96,6 +107,17 @@ def sp_add_new():
     else:
         return render_template('spnew.html')
 
+@app.route('/<db>/spdeldbconf', methods=['GET'])
+def sp_delete_db_conf(db):
+    return render_template('spdeldbconf.html', db_name = db)
+
+@app.route('/<db>/spdelete', methods=['GET'])
+def sp_delete_db(db):
+    cursor = mysql.connection.cursor()
+    cursor.execute("DELETE FROM rfarchive.spproject WHERE pid='%s';" % db)
+    mysql.connection.commit()
+    return redirect(url_for('sp_historic_home'))
+
 #### Snow Report End ####
 
 #### SF Report Start ####
@@ -133,6 +155,17 @@ def sf_add_new():
             return redirect(url_for('sf_historic_home'))
     else:
         return render_template('sfnew.html')
+
+@app.route('/<db>/sfdeldbconf', methods=['GET'])
+def sf_delete_db_conf(db):
+    return render_template('sfdeldbconf.html', db_name = db)
+
+@app.route('/<db>/sfdelete', methods=['GET'])
+def sf_delete_db(db):
+    cursor = mysql.connection.cursor()
+    cursor.execute("DELETE FROM rfarchive.sfproject WHERE pid='%s';" % db)
+    mysql.connection.commit()
+    return redirect(url_for('sf_historic_home'))
 
 #### SF Report End ####
 def use_db(cursor, db_name):
