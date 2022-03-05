@@ -30,9 +30,9 @@ def parse_options():
     )
 
     general.add_argument(
-        '-n', '--projectname',
-        dest='projectname',
-        help="Name of the project"
+        '-d', '--projectid',
+        dest='projectid',
+        help="project id"
     )
 
     general.add_argument(
