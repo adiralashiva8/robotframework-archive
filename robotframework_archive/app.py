@@ -18,14 +18,6 @@ def index():
 def home():
     return render_template('home.html')
 
-@app.route('/hshome')
-def historic_home():
-    return render_template('hshome.html')
-
-@app.route('/sphome')
-def sp_historic_home():
-    return render_template('sphome.html')
-
 @app.route('/sfhome')
 def sf_historic_home():
     return render_template('sfhome.html')
@@ -35,6 +27,22 @@ def redirect_url():
     return render_template('redirect.html')
 
 ##### Historic Report Start ####
+
+@app.route('/hshome', methods=['GET', 'POST'])
+def historic_home():
+    if request.method == "POST":
+        search = request.form['search']
+        cursor = mysql.connection.cursor()
+        use_db(cursor, "rfarchive")
+        cursor.execute("SELECT * FROM hsproject WHERE name LIKE '%{name}%';".format(name=search))
+        data = cursor.fetchall()
+        return render_template('hshome.html', data=data)
+    else:
+        cursor = mysql.connection.cursor()
+        use_db(cursor, "rfarchive")
+        cursor.execute("SELECT * FROM hsproject;")
+        data = cursor.fetchall()
+        return render_template('hshome.html', data=data)
 
 @app.route('/hsnew', methods=['GET', 'POST'])
 def hs_add_new():
@@ -58,6 +66,22 @@ def hs_add_new():
 
 ####  Snow Report Start ####
 
+@app.route('/sphome', methods=['GET', 'POST'])
+def sp_historic_home():
+    if request.method == "POST":
+        search = request.form['search']
+        cursor = mysql.connection.cursor()
+        use_db(cursor, "rfarchive")
+        cursor.execute("SELECT * FROM spproject WHERE name LIKE '%{name}%';".format(name=search))
+        data = cursor.fetchall()
+        return render_template('sphome.html', data=data)
+    else:
+        cursor = mysql.connection.cursor()
+        use_db(cursor, "rfarchive")
+        cursor.execute("SELECT * FROM spproject;")
+        data = cursor.fetchall()
+        return render_template('sphome.html', data=data)
+
 @app.route('/spnew', methods=['GET', 'POST'])
 def sp_add_new():
     if request.method == "POST":
@@ -79,6 +103,22 @@ def sp_add_new():
 #### Snow Report End ####
 
 #### SF Report Start ####
+
+@app.route('/sfhome', methods=['GET', 'POST'])
+def sf_historic_home():
+    if request.method == "POST":
+        search = request.form['search']
+        cursor = mysql.connection.cursor()
+        use_db(cursor, "rfarchive")
+        cursor.execute("SELECT * FROM sfproject WHERE name LIKE '%{name}%';".format(name=search))
+        data = cursor.fetchall()
+        return render_template('sfhome.html', data=data)
+    else:
+        cursor = mysql.connection.cursor()
+        use_db(cursor, "rfarchive")
+        cursor.execute("SELECT * FROM sfproject;")
+        data = cursor.fetchall()
+        return render_template('sfhome.html', data=data)
 
 @app.route('/sfnew', methods=['GET', 'POST'])
 def sf_add_new():
