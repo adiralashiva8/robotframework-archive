@@ -33,12 +33,5 @@ def parse_options():
         help="Flask app host address"
     )
 
-    general.add_argument(
-        '-o', '--appport',
-        dest='appport',
-        default='5000',
-        help="Flask app port address"
-    )
-
     args = parser.parse_args()
     return args

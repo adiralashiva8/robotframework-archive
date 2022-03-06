@@ -897,6 +897,222 @@ def sf_delete_db(db):
     mysql.connection.commit()
     return redirect(url_for('sf_historic_home'))
 
+@app.route('/<db>/sfsearch', methods=['GET', 'POST'])
+def sfsearch(db):
+    if request.method == "POST":
+        search = request.form['search']
+        cursor = mysql.connection.cursor()
+        # use_db(cursor, db)
+        try:
+            if search:
+                cursor.execute("SELECT * from rfarchive.sftest WHERE (pid={pid}) and (name LIKE '%{name}%' OR eid LIKE '%{name}%') ORDER BY eid DESC LIMIT 500;".format(name=search, pid=db))
+                data = cursor.fetchall()
+                return render_template('sfsearch.html', data=data, db_name=db, error_message="")
+            else:
+                return render_template('sfsearch.html', db_name=db, error_message="Search text should not be empty")
+        except Exception as e:
+            print(str(e))
+            return render_template('sfsearch.html', db_name=db, error_message="Could not perform search. Avoid single quote in search or use escaping character")
+    else:
+        return render_template('sfsearch.html', db_name=db, error_message="")
+
+@app.route('/<db>/sfehistoric', methods=['GET'])
+def sfehistoric(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    cursor.execute("SELECT * from rfarchive.sfexecution WHERE pid=%s order by eid desc LIMIT 500;" % (db))
+    data = cursor.fetchall()
+    return render_template('sfehistoric.html', data=data, db_name=db)
+
+@app.route('/<db>/sfdeleconf/<eid>', methods=['GET'])
+def sfdelete_eid_conf(db, eid):
+    return render_template('sfdeleconf.html', db_name = db, eid = eid)
+
+@app.route('/<db>/sfedelete/<eid>', methods=['GET'])
+def sfdelete_eid(db, eid):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    # remove execution from tables: execution, suite, test
+    cursor.execute("DELETE FROM rfarchive.sfexecution WHERE eid='%s' AND pid='%s';" % (eid, db))
+    cursor.execute("DELETE FROM rfarchive.sftest WHERE eid='%s' AND pid='%s';" % (eid, db))
+    # get no. of executions
+    cursor.execute("SELECT COUNT(*) from rfarchive.sfexecution WHERE pid='%s';" % (db))
+    exe_data = cursor.fetchall()
+
+    # update sphistoric project
+    cursor.execute("UPDATE rfarchive.sfproject SET total=%s, updated=now() WHERE pid='%s';" % (int(exe_data[0][0]), db))
+    # commit changes
+    mysql.connection.commit()
+    return redirect(url_for('sfehistoric', db = db))
+
+@app.route('/<db>/sfmetrics/<eid>', methods=['GET'])
+def sfmetrics(db, eid):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    # Get testcase results of execution id
+    cursor.execute("SELECT * from rfarchive.sftest WHERE eid=%s;" % eid)
+    test_data = cursor.fetchall()
+    # get suite results of execution id
+    cursor.execute("SELECT * from rfarchive.sfexecution WHERE eid=%s;" % eid)
+    exe_data = cursor.fetchall()
+    return render_template('sfmetrics.html', exe_data=exe_data, test_data=test_data)
+
+@app.route('/<db>/sfcmetrics', methods=['GET'])
+def sfcmetrics(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    eid_one = request.args.get('eid_one')
+    eid_two = request.args.get('eid_two')
+    # Get testcase results of execution id
+    cursor.execute("SELECT * from rfarchive.sftest WHERE eid=%s AND pid=%s;" % (eid_one, db))
+    test_data_1 = cursor.fetchall()
+    cursor.execute("SELECT * from rfarchive.sftest WHERE eid=%s AND pid=%s;" % (eid_two, db))
+    test_data_2 = cursor.fetchall()
+    # get suite results of execution id
+    cursor.execute("SELECT * from rfarchive.sfexecution WHERE eid=%s;" % eid_one)
+    exe_data_1 = cursor.fetchall()
+    cursor.execute("SELECT * from rfarchive.sfexecution WHERE eid=%s;" % eid_two)
+    exe_data_2 = cursor.fetchall()
+    return render_template('sfcmetrics.html', exe_data_1=exe_data_1, exe_data_2=exe_data_2, test_data_1=test_data_1, test_data_2=test_data_2)
+
+@app.route('/<db>/sftmetrics', methods=['GET', 'POST'])
+def sftmetrics(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+
+    # Get last row execution ID
+    cursor.execute("SELECT eid from rfarchive.sfexecution WHERE pid=%s order by eid desc LIMIT 1;" % db)
+    data = cursor.fetchone()
+    # Get testcase results of execution id (typically last executed)
+    cursor.execute("SELECT * from rfarchive.sftest WHERE eid=%s;" % data)
+    data = cursor.fetchall()
+    return render_template('sftmetrics.html', data=data, db_name=db)
+
+@app.route('/<db>/sftmetrics/<eid>', methods=['GET', 'POST'])
+def sfeid_tmetrics(db, eid):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+
+    # Get testcase results of execution id (typically last executed)
+    cursor.execute("SELECT * from rfarchive.sftest WHERE eid=%s AND pid=%s;" % (eid, db))
+    data = cursor.fetchall()
+    return render_template('sfeidtmetrics.html', data=data, db_name=db)
+
+@app.route('/<db>/sfdashboardRecent', methods=['GET'])
+def sfdashboardRecent(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+
+    cursor.execute("SELECT COUNT(eid) from rfarchive.sfexecution WHERE pid=%s;" % db)
+    results_data = cursor.fetchall()
+    cursor.execute("SELECT COUNT(tid) from rfarchive.sftest WHERE pid=%s;" % db)
+    test_results_data = cursor.fetchall()
+
+    if results_data[0][0] > 0 and test_results_data[0][0] > 0:
+
+        cursor.execute("SELECT eid from rfarchive.sfexecution WHERE pid=%s order by eid desc LIMIT 2;" % db)
+        exe_info = cursor.fetchall()
+
+        if len(exe_info) == 1:
+            pass
+        else:
+            exe_info = (exe_info[0], exe_info[0])
+        
+        cursor.execute("SELECT * from rfarchive.sftest WHERE eid=%s AND pid=%s;" % (exe_info[0][0], db))
+        last_exe_data = cursor.fetchall()
+
+        cursor.execute("SELECT name, ept_time from rfarchive.sftest WHERE eid=%s AND pid=%s order by ept_time desc LIMIT 5;" % (exe_info[0][0], db))
+        crt_data = cursor.fetchall()
+
+        cursor.execute("SELECT COUNT(name) from rfarchive.sftest WHERE eid=%s" % exe_info[0][0])
+        tables_data = cursor.fetchall()
+
+        return render_template('sfdashboardRecent.html', last_exe_data=last_exe_data, exe_info=exe_info, db_name=db,
+         crt_data=crt_data, tables_data=tables_data)    
+    else:
+        return redirect(url_for('redirect_url'))
+
+
+@app.route('/<db>/sfdashboardRecentTwo', methods=['GET', 'POST'])
+def sfdashboardRecentTwo(db):
+    cursor = mysql.connection.cursor()
+    # use_db(cursor, db)
+    cursor.execute("SELECT COUNT(eid) from rfarchive.sfexecution WHERE pid=%s;" % db)
+    results_data = cursor.fetchall()
+    cursor.execute("SELECT COUNT(tid) from rfarchive.sftest WHERE pid=%s;" % db)
+    test_results_data = cursor.fetchall()
+
+    if results_data[0][0] > 0 and test_results_data[0][0] > 0:
+
+        if request.method == "POST":
+            eid_one = request.form['eid_one']
+            eid_two = request.form['eid_two']
+            # fetch first eid tets results
+            cursor.execute("SELECT name, eid, ept_time from rfarchive.sftest WHERE eid=%s AND pid=%s;" % (eid_one, db) )
+            first_data = cursor.fetchall()
+            # fetch second eid test results
+            cursor.execute("SELECT name, eid, ept_time from rfarchive.sftest WHERE eid=%s AND pid=%s;" % (eid_two, db) )
+            second_data = cursor.fetchall()
+
+            cursor.execute("SELECT description, time from rfarchive.sfexecution WHERE eid=%s;" % eid_one)
+            desc_data = cursor.fetchall()
+            one_app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
+
+            cursor.execute("SELECT description, time from rfarchive.sfexecution WHERE eid=%s AND pid=%s;" % (eid_two, db))
+            desc_data = cursor.fetchall()
+            two_app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
+
+            if first_data and second_data:
+                # combine both tuples
+                data = first_data + second_data
+                sorted_data = sort_tests(data)
+                # print(sorted_data)
+                return render_template('sfdashboardRecentTwo.html', data=sorted_data, db_name=db, fb = first_data, sb = second_data,
+                 eid_one = eid_one, eid_two = eid_two, one_app_version_data=one_app_version_data,
+                  two_app_version_data=two_app_version_data, error_message="", show_link=1)
+            else:
+                return render_template('sfdashboardRecentTwo.html', db_name=db, error_message="EID not found, try with existing EID", show_link=0)    
+        else:
+            cursor.execute("SELECT eid from rfarchive.sfexecution WHERE pid=%s order by eid desc LIMIT 2;" % (db))
+            exe_info = cursor.fetchall()
+
+            if len(exe_info) >= 2:
+                exe_info = (exe_info[0][0], exe_info[1][0])
+            else:
+                exe_info = (exe_info[0][0], exe_info[0][0])
+
+            eid_one = exe_info[0]
+            eid_two = exe_info[1]
+            # fetch first eid tets results
+            cursor.execute("SELECT name, eid, ept_time from rfarchive.sftest WHERE eid=%s AND pid=%s;" % (eid_one, db) )
+            first_data = cursor.fetchall()
+            # fetch second eid test results
+            cursor.execute("SELECT name, eid, ept_time from rfarchive.sftest WHERE eid=%s AND pid=%s;" % (eid_two, db) )
+            second_data = cursor.fetchall()
+
+            cursor.execute("SELECT description, time from rfarchive.sfexecution WHERE eid=%s;" % eid_one)
+            desc_data = cursor.fetchall()
+            one_app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
+
+            cursor.execute("SELECT description, time from rfarchive.sfexecution WHERE eid=%s AND pid=%s;" % (eid_two, db))
+            desc_data = cursor.fetchall()
+            two_app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
+
+            if first_data and second_data:
+                # combine both tuples
+                data = first_data + second_data
+                sorted_data = sort_tests(data)
+                # print(sorted_data)
+                return render_template('sfdashboardRecentTwo.html', data=sorted_data, db_name=db, fb = first_data, sb = second_data,
+                 eid_one = eid_one, eid_two = eid_two, one_app_version_data=one_app_version_data,
+                  two_app_version_data=two_app_version_data, error_message="", show_link=1)
+            else:
+                return render_template('sfdashboardRecentTwo.html', db_name=db, error_message="EID not found, try with existing EID", show_link=0)
+
+    else:
+        return redirect(url_for('redirect_url'))
+
+
 #### SF Report End ####
 def use_db(cursor, db_name):
     cursor.execute("USE %s;" % db_name)
@@ -923,4 +1139,4 @@ def main():
     app.config['MYSQL_USER'] = args.username
     app.config['MYSQL_PASSWORD'] = args.password
     app.config['auth_plugin'] = 'mysql_native_password'
-    app.run(host=args.apphost, port=args.appport)
+    app.run(host=args.apphost)
