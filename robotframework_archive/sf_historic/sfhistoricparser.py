@@ -67,7 +67,7 @@ def insert_into_execution_table(con, pid, description):
 
 def insert_into_test_table(con, eid, pid, table_name, ept_time):
     cursorObj = con.cursor()
-    sql = "INSERT INTO rfarchive.sptest (tid, eid, pid, name, ept_time) VALUES (%s, %s, %s, %s, %s)"
+    sql = "INSERT INTO rfarchive.sftest (tid, eid, pid, name, ept_time) VALUES (%s, %s, %s, %s, %s)"
     val = (0, eid, pid, table_name, ept_time)
     cursorObj.execute(sql, val)
 
