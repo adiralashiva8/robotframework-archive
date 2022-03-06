@@ -789,7 +789,7 @@ def spdashboardRecentTwo(db):
             cursor.execute("SELECT name, eid, client_response_time, sql_time from rfarchive.sptest WHERE eid=%s AND pid=%s;" % (eid_two, db) )
             second_data = cursor.fetchall()
 
-            cursor.execute("SELECT Execution_Desc, Execution_Date from rfarchive.spexecution WHERE eid=%s;" % eid_one)
+            cursor.execute("SELECT description, time from rfarchive.spexecution WHERE eid=%s;" % eid_one)
             desc_data = cursor.fetchall()
             one_app_version_data=str(desc_data[0][0]) + "__" + str(desc_data[0][1])
 
