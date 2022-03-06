@@ -33,7 +33,7 @@ def sfhistoric_parser(opts):
     for line in table.to_csv(header=False, index=True).split('\n'):
         if line:
             values = line.split(',')
-            insert_into_test_table(rootdb, result_id, opts.projectid, str(values[0]), float(values[2])))
+            insert_into_test_table(rootdb, result_id, opts.projectid, str(values[0]), float(values[2]))
 
     print("INFO: Writing execution results to tables")
     commit_and_close_db(rootdb)
