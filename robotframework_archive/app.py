@@ -281,7 +281,7 @@ def hsdashboardRecentFive(db):
         new_tests = exe_info[0][1] - exe_info[-1][1]
 
         return render_template('hsdashboardRecentFive.html', exe_id_avg_data=exe_id_avg_data,
-         exe_id_filter_data=exe_id_filter_data, results_data=results_data,,fail_counts=fail_counts,fail_counts_analy=fail_counts_analy,
+         exe_id_filter_data=exe_id_filter_data, results_data=results_data,fail_counts=fail_counts,fail_counts_analy=fail_counts_analy,
          new_tests=new_tests,db_name=db)
 
     else:
