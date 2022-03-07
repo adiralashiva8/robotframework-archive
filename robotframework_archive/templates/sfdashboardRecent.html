@@ -78,10 +78,10 @@
                         </h1>
                     </div>
                     <div class="row row-cards">
-                        <div class="col-lg-6 col-xl-4">
+                        <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Top 5: Client Response Time</h3>
+                                    <h3 class="card-title">Top 5: EPT Time(s)</h3>
                                     <div class="card-options">
                                         <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
                                     </div>
@@ -98,62 +98,13 @@
                                 </table>
                             </div>    
                         </div>
-                        <div class="col-lg-6 col-xl-4">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Top 5: SQL Time</h3>
-                                    <div class="card-options">
-                                        <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
-                                    </div>
-                                </div>
-                                <table class="table card-table">
-                                    <tbody>                                            
-                                        {% for item in sqlt_data %}
-                                            <tr>
-                                                <td> {{item[0]}}</td>
-                                                <td class="text-right"><span class="text-muted"> {{item[1]}}</span></td>
-                                            </tr>
-                                        {% endfor %}                                    
-                                    </tbody>
-                                </table>
-                            </div>    
-                        </div>
-                        <div class="col-lg-6 col-xl-4">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Other Statistics</h3>
-                                    <div class="card-options">
-                                        <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
-                                    </div>
-                                </div>
-                                <table class="table card-table">
-                                    <tbody>
-                                        <tr>
-                                            <td><i class="fa fa-list-alt text-muted"></i></td>
-                                            <td>Total Tables</td>
-                                            <td class="text-right"><span class="text-muted">{{tables_data[0][0]}}</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="fa fa-chrome text-muted"></i></td>
-                                            <td title="Sum of client response time">Sum of Client Response Time</td>
-                                            <td class="text-right"><span class="text-muted">{{scrt_data[0][0]}}</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="fa fa-database text-muted"></i></td>
-                                            <td title="Sum of sql time">Sum of SQL Time</td>
-                                            <td class="text-right"><span class="text-muted">{{ssqlt_data[0][0]}}</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>    
-                        </div>
                     </div>
 
                     <div class="row row-cards">
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Client Response Time(ms)</h3>
+                                    <h3 class="card-title">EPT Time(ms)</h3>
                                     <div class="card-options">
                                         <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i
                                                 class="fe fe-chevron-up"></i></a>
@@ -161,22 +112,6 @@
                                 </div>
                                 <div class="card-body">
                                     <div id="responseTimeId" style="height: auto;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row row-cards">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">SQL Time(ms)</h3>
-                                    <div class="card-options">
-                                        <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i
-                                                class="fe fe-chevron-up"></i></a>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div id="sqlId" style="height: auto;"></div>
                                 </div>
                             </div>
                         </div>
@@ -190,8 +125,8 @@
             var clientResponseTimeArray = [];
             var catArray = [];
             {% for item in last_exe_data %}
-                catArray.push('{{item[3]}}');
-                clientResponseTimeArray.push({{item[5]}});
+                catArray.push('{{item[2]}}');
+                clientResponseTimeArray.push({{item[3]}});
             {% endfor %}
 
         var options = {
@@ -234,58 +169,6 @@
         };
 
         var chart = new ApexCharts(document.querySelector("#responseTimeId"), options);
-        chart.render();
-        });
-    </script>
-    <script>
-        require(['svg', 'ApexCharts'], function (svg, ApexCharts) {
-            var sqlTimeArray = [];
-            var catArray = [];
-            {% for item in last_exe_data %}
-                catArray.push('{{item[3]}}');
-                sqlTimeArray.push({{item[8]}});
-            {% endfor %}
-
-        var options = {
-            series: [{
-                name: '{{app_version_data}}',
-                data: sqlTimeArray
-            }],
-            chart: {
-                type: 'bar',
-                height: 430
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    dataLabels: {
-                        position: 'top',
-                    },
-                }
-            },
-            dataLabels: {
-                enabled: false,
-                // offsetX: -6,
-                style: {
-                    fontSize: '10px',
-                    colors: ['#fff']
-                }
-            },
-            // stroke: {
-            //     show: true,
-            //     width: 1,
-            //     colors: ['#fff']
-            // },
-            tooltip: {
-                shared: true,
-                intersect: false
-            },
-            xaxis: {
-                categories: catArray,
-            },
-        };
-
-        var chart = new ApexCharts(document.querySelector("#sqlId"), options);
         chart.render();
         });
     </script>
