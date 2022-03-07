@@ -147,7 +147,7 @@ def hsdashboardRecent(db):
         cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
         fail_counts = cursor.fetchall()
 
-        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND status IS NULL AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND comment IS NULL AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
         fail_counts_analy = cursor.fetchall()
 
         # required analysis percentage
@@ -222,7 +222,7 @@ def hseid_dashboard(db, eid):
         cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
         fail_counts = cursor.fetchall()
 
-        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND status IS NULL AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND comment IS NULL AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
         fail_counts_analy = cursor.fetchall()
     
         # required analysis percentage
@@ -274,7 +274,7 @@ def hsdashboardRecentFive(db):
         cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid>'%s' GROUP BY assigned AND pid=%s;" % (exe_info[-1][0], db))
         fail_counts = cursor.fetchall()
 
-        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND status IS NULL AND eid>'%s' GROUP BY assigned AND pid=%s;" % (exe_info[-1][0], db))
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND comment IS NULL AND eid>'%s' GROUP BY assigned AND pid=%s;" % (exe_info[-1][0], db))
         fail_counts_analy = cursor.fetchall()
 
         # new tests
