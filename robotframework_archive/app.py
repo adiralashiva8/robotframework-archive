@@ -241,7 +241,7 @@ def hseid_dashboard(db, eid):
          req_anal_data=req_anal_data, app_failure_anl_count=app_failure_anl_count,
          req_anal_perc_data=req_anal_perc_data, auto_failure_anl_count=auto_failure_anl_count,
          new_tests_count=new_tests_count, other_failure_anl_count=other_failure_anl_count,
-         passed_test_dif=passed_test_dif,,fail_counts=fail_counts,fail_counts_analy=fail_counts_analy,
+         passed_test_dif=passed_test_dif,fail_counts=fail_counts,fail_counts_analy=fail_counts_analy,
          failed_test_dif=failed_test_dif,
          skipped_test_dif=skipped_test_dif,
          test_avg_dur_data=test_avg_dur_data,
