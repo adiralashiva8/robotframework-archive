@@ -192,7 +192,7 @@
                 var skipArray = [];
                 var catgArray = [];
     
-                {% for item in exe_id_filter_data %}
+                {% for item in exe_id_filter_data|reverse %}
                     catgArray.push({{item[0]}});
                     passArray.push({{item[1]}});
                     failArray.push({{item[2]}});
@@ -272,7 +272,7 @@
             require(['svg', 'ApexCharts'], function(svg, ApexCharts) {
                 var dataArray = [];
                 var catgArray = [];
-                {% for item in exe_id_filter_data %}
+                {% for item in exe_id_filter_data|reverse %}
                     dataArray.push({{item[3]}});
                     catgArray.push({{item[0]}});
                 {% endfor %}
