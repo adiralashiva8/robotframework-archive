@@ -9,6 +9,25 @@ def rfarchive_setup(opts):
 
     # create new user
     obj = mydb.cursor()
+    print("INFO: Creating superuser with local access")
+    try:
+        obj.execute("CREATE USER IF NOT EXISTS 'superuser'@'localhost' IDENTIFIED BY 'passw0rd';")
+        obj.execute("GRANT ALL PRIVILEGES ON *.* TO 'superuser'@'localhost' WITH GRANT OPTION;")
+    except Exception as e:
+        print(str(e))
+    
+    print("INFO: Creating superuser with remote access")
+    try:
+        obj.execute("CREATE USER 'superuser'@'%' IDENTIFIED BY 'passw0rd';")
+        obj.execute("GRANT ALL PRIVILEGES ON *.* TO 'superuser'@'%' WITH GRANT OPTION;")
+    except Exception as e:
+        print(str(e))
+    
+    print("INFO: Reloading grant table")
+    try:
+        obj.execute("FLUSH PRIVILEGES;")
+    except Exception as e:
+        print(str(e))
  
     print("INFO: Creating rfarchive dB")
     try:

@@ -18,14 +18,14 @@ def parse_options():
     general.add_argument(
         '-u', '--username',
         dest='username',
-        default='root',
+        default='superuser',
         help="MySQL db user name"
     )
 
     general.add_argument(
         '-p', '--password',
         dest='password',
-        default='123456',
+        default='passw0rd',
         help="MySQL db password"
     )
 
