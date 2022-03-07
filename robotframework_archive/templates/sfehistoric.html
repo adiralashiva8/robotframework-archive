@@ -13,7 +13,7 @@
         <meta name="HandheldFriendly" content="True" />
         <meta name="MobileOptimized" content="320" />
         <link href="https://img.icons8.com/cotton/64/000000/time-machine.png" rel="shortcut icon" type="image/x-icon"/>
-        <title>SP Historic - History</title>
+        <title>SF Historic - History</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext" />
         <script src="/assets/js/require.min.js"></script>
@@ -49,27 +49,18 @@
                                     <li class="nav-item">
                                         <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"> <i class="fa fa-dashboard" style="color: CADETBLUE;"></i> Dashboard<i class="fe fe-chevron-down"></i></a>
                                         <div class="dropdown-menu dropdown-menu-arrow">
-                                            <a href="./spdashboardRecent" class="dropdown-item" style="color:blue">Recent</a>
-                                            <a href="./spdashboardRecentTwo" class="dropdown-item" style="color:blue">Recent 2</a>
+                                            <a href="./sfdashboardRecent" class="dropdown-item" style="color:blue">Recent</a>
+                                            <a href="./sfdashboardRecentTwo" class="dropdown-item" style="color:blue">Recent 2</a>
                                         </div>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="./spehistoric" class="nav-link active"><i class="fa fa-calendar" style="color: CORNFLOWERBLUE;"></i> Historic</a>
+                                        <a href="./sfehistoric" class="nav-link active"><i class="fa fa-calendar" style="color: CORNFLOWERBLUE;"></i> Historic</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="./sptmetrics" class="nav-link"><i class="fa fa-flask" style="color: PALEVIOLETRED;"></i> Recent</a>
+                                        <a href="./sftmetrics" class="nav-link"><i class="fa fa-flask" style="color: PALEVIOLETRED;"></i> Recent</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="./spsearch" class="nav-link"><i class="fa fa-search" style="color: CHOCOLATE;"></i> Search</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="./spcompare" class="nav-link"><i class="fa fa-sliders" style="color: teal;"></i> Compare</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"> <i class="fa fa-thumb-tack" style="color: CADETBLUE;"></i> Other<i class="fe fe-chevron-down"></i></a>
-                                        <div class="dropdown-menu dropdown-menu-arrow">
-                                            
-                                        </div>
+                                        <a href="./sfsearch" class="nav-link"><i class="fa fa-search" style="color: CHOCOLATE;"></i> Search</a>
                                     </li>
                                 </ul>
                             </div>
@@ -92,7 +83,7 @@
                                     <tbody>
                                         {% for item in data %}
                                         <tr>
-                                            <td title="Click to view {{item[0]}} execution info"><a href="./sptmetrics/{{item[0]}}" target="_blank">{{item[0]}}</a></td>
+                                            <td title="Click to view {{item[0]}} execution info"><a href="./sftmetrics/{{item[0]}}" target="_blank">{{item[0]}}</a></td>
                                             <td>{{item[3]}}</td>
                                             <td style="word-wrap: break-word; max-width: 250px; white-space: normal; text-align: left;">{{item[2]}}</td>
 
@@ -100,10 +91,10 @@
                                                 <span class="dropdown ml-1">
                                                     <button class="btn btn-white btn-sm dropdown-toggle align-text-top" data-boundary="viewport" data-toggle="dropdown">Actions</button>
                                                     <div class="dropdown-menu dropdown-menu-right">
-                                                        <a class="dropdown-item" style="color:blue" href="./spdeleconf/{{item[0]}}">Delete Execution</a>
-                                                        <a class="dropdown-item" style="color:blue" href="./spmetrics/{{item[0]}}" target="_blank">Export</a>
+                                                        <a class="dropdown-item" style="color:blue" href="./sfdeleconf/{{item[0]}}">Delete Execution</a>
+                                                        <a class="dropdown-item" style="color:blue" href="./sfmetrics/{{item[0]}}" target="_blank">Export</a>
                                                     </div>
-                                                </span>
+                                                </sfan>
                                             </td>
                                         </tr>
                                         {% endfor %}

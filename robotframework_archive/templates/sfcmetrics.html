@@ -97,12 +97,8 @@
             <thead>
                 <tr>
                     <th>App Version-Date</th>
-                    <th>Table Name</th>
-                    <th>Browser Time</th>
-                    <th>Client Response Time</th>
-                    <th>Response Time</th>
-                    <th>Sql Count</th>
-                    <th>Sql Time</th>
+                    <th>Test Name</th>
+                    <th>EPT Time</th>
                 </tr>
             </thead>
             <tbody>
@@ -111,21 +107,13 @@
                     <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:left;">{{exe_data_1[0][2]}}__{{exe_data_1[0][1]}}</td>
                     <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[3]}}</td>
                     <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[4]}}</td>
-                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[5]}}</td>
-                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[6]}}</td>
-                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[7]}}</td>
-                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[8]}}</td>
                 </tr>
                 {% endfor %}
                 {% for item in test_data_2 %}
                 <tr>
                     <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:left;">{{exe_data_2[0][2]}}__{{exe_data_2[0][1]}}</td>
-                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[3]}}</td>
+                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[3}}</td>
                     <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[4]}}</td>
-                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[5]}}</td>
-                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[6]}}</td>
-                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[7]}}</td>
-                    <td style="word-wrap: break-word;max-width: 250px; white-space: normal;text-align:center;">{{item[8]}}</td>
                 </tr>
                 {% endfor %}
             </tbody>

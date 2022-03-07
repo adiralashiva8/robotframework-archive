@@ -125,8 +125,8 @@
             var clientResponseTimeArray = [];
             var catArray = [];
             {% for item in last_exe_data %}
-                catArray.push('{{item[2]}}');
-                clientResponseTimeArray.push({{item[3]}});
+                catArray.push('{{item[3]}}');
+                clientResponseTimeArray.push({{item[4]}});
             {% endfor %}
 
         var options = {

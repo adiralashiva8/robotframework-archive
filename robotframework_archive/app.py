@@ -144,6 +144,12 @@ def hsdashboardRecent(db):
         cursor.execute("SELECT COUNT(*) from rfarchive.hstest WHERE eid=%s AND pid=%s AND type LIKE '%%Other%%';" % (exe_info[0][0], db))
         other_failure_anl_count = cursor.fetchall()
 
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        fail_counts = cursor.fetchall()
+
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND status IS NULL AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        fail_counts_analy = cursor.fetchall()
+
         # required analysis percentage
         if last_exe_data[0][1] > 0 and last_exe_data[0][1] != req_anal_data[0][0]:
             req_anal_perc_data = round( ((last_exe_data[0][1] - req_anal_data[0][0]) / last_exe_data[0][1])*100  ,2)
@@ -160,7 +166,7 @@ def hsdashboardRecent(db):
         req_anal_data=req_anal_data, app_failure_anl_count=app_failure_anl_count,
         req_anal_perc_data=req_anal_perc_data, auto_failure_anl_count=auto_failure_anl_count,
         new_tests_count=new_tests_count,other_failure_anl_count=other_failure_anl_count,
-        passed_test_dif=passed_test_dif,
+        passed_test_dif=passed_test_dif,fail_counts=fail_counts,fail_counts_analy=fail_counts_analy,
         failed_test_dif=failed_test_dif,
         skipped_test_dif=skipped_test_dif,
         test_avg_dur_data=test_avg_dur_data,
@@ -213,6 +219,12 @@ def hseid_dashboard(db, eid):
         cursor.execute("SELECT COUNT(*) from rfarchive.hstest WHERE eid=%s AND pid=%s AND type LIKE '%%Other%%';" % (exe_info[0][0], db))
         other_failure_anl_count = cursor.fetchall()
 
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        fail_counts = cursor.fetchall()
+
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND status IS NULL AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        fail_counts_analy = cursor.fetchall()
+    
         # required analysis percentage
         if last_exe_data[0][1] > 0 and last_exe_data[0][1] != req_anal_data[0][0]:
             req_anal_perc_data = round( ((last_exe_data[0][1] - req_anal_data[0][0]) / last_exe_data[0][1])*100  ,2)
@@ -229,7 +241,7 @@ def hseid_dashboard(db, eid):
          req_anal_data=req_anal_data, app_failure_anl_count=app_failure_anl_count,
          req_anal_perc_data=req_anal_perc_data, auto_failure_anl_count=auto_failure_anl_count,
          new_tests_count=new_tests_count, other_failure_anl_count=other_failure_anl_count,
-         passed_test_dif=passed_test_dif,
+         passed_test_dif=passed_test_dif,,fail_counts=fail_counts,fail_counts_analy=fail_counts_analy,
          failed_test_dif=failed_test_dif,
          skipped_test_dif=skipped_test_dif,
          test_avg_dur_data=test_avg_dur_data,
@@ -259,11 +271,17 @@ def hsdashboardRecentFive(db):
         cursor.execute("SELECT eid, pass, fail, etime, skip from rfarchive.hsexecution WHERE pid=%s order by eid desc LIMIT 5;" % db)
         exe_id_filter_data = cursor.fetchall()
 
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid>'%s' GROUP BY assigned AND pid=%s;" % (exe_info[-1][0], db))
+        fail_counts = cursor.fetchall()
+
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND status IS NULL AND eid>'%s' GROUP BY assigned AND pid=%s;" % (exe_info[-1][0], db))
+        fail_counts_analy = cursor.fetchall()
+
         # new tests
         new_tests = exe_info[0][1] - exe_info[-1][1]
 
         return render_template('hsdashboardRecentFive.html', exe_id_avg_data=exe_id_avg_data,
-         exe_id_filter_data=exe_id_filter_data, results_data=results_data,
+         exe_id_filter_data=exe_id_filter_data, results_data=results_data,,fail_counts=fail_counts,fail_counts_analy=fail_counts_analy,
          new_tests=new_tests,db_name=db)
 
     else:
