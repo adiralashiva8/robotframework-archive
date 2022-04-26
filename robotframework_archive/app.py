@@ -144,11 +144,14 @@ def hsdashboardRecent(db):
         cursor.execute("SELECT COUNT(*) from rfarchive.hstest WHERE eid=%s AND pid=%s AND type LIKE '%%Other%%';" % (exe_info[0][0], db))
         other_failure_anl_count = cursor.fetchall()
 
-        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid='%s' AND pid=%s GROUP BY assigned;" % (exe_info[0][0], db))
         fail_counts = cursor.fetchall()
 
-        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND comment IS NULL AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND comment IS NULL AND eid='%s' AND pid=%s GROUP BY assigned;" % (exe_info[0][0], db))
         fail_counts_analy = cursor.fetchall()
+
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND type NOT LIKE '%%Automation%%' AND eid='%s' AND pid=%s GROUP BY assigned;" % (exe_info[0][0], db))
+        non_app_issues_analy = cursor.fetchall()
 
         # required analysis percentage
         if last_exe_data[0][1] > 0 and last_exe_data[0][1] != req_anal_data[0][0]:
@@ -167,7 +170,7 @@ def hsdashboardRecent(db):
         req_anal_perc_data=req_anal_perc_data, auto_failure_anl_count=auto_failure_anl_count,
         new_tests_count=new_tests_count,other_failure_anl_count=other_failure_anl_count,
         passed_test_dif=passed_test_dif,fail_counts=fail_counts,fail_counts_analy=fail_counts_analy,
-        failed_test_dif=failed_test_dif,
+        failed_test_dif=failed_test_dif,non_app_issues_analy=non_app_issues_analy,
         skipped_test_dif=skipped_test_dif,
         test_avg_dur_data=test_avg_dur_data,
         db_name=db)
@@ -219,11 +222,14 @@ def hseid_dashboard(db, eid):
         cursor.execute("SELECT COUNT(*) from rfarchive.hstest WHERE eid=%s AND pid=%s AND type LIKE '%%Other%%';" % (exe_info[0][0], db))
         other_failure_anl_count = cursor.fetchall()
 
-        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid='%s AND pid=%s' GROUP BY assigned;" % (exe_info[0][0], db))
         fail_counts = cursor.fetchall()
 
-        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND comment IS NULL AND eid='%s' GROUP BY assigned AND pid=%s;" % (exe_info[0][0], db))
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND comment IS NULL AND eid='%s' AND pid=%s GROUP BY assigned;" % (exe_info[0][0], db))
         fail_counts_analy = cursor.fetchall()
+
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND type NOT LIKE '%%Automation%%' AND eid='%s' AND pid=%s GROUP BY assigned;" % (exe_info[0][0], db))
+        non_app_issues_analy = cursor.fetchall()
     
         # required analysis percentage
         if last_exe_data[0][1] > 0 and last_exe_data[0][1] != req_anal_data[0][0]:
@@ -242,7 +248,7 @@ def hseid_dashboard(db, eid):
          req_anal_perc_data=req_anal_perc_data, auto_failure_anl_count=auto_failure_anl_count,
          new_tests_count=new_tests_count, other_failure_anl_count=other_failure_anl_count,
          passed_test_dif=passed_test_dif,fail_counts=fail_counts,fail_counts_analy=fail_counts_analy,
-         failed_test_dif=failed_test_dif,
+         failed_test_dif=failed_test_dif,non_app_issues_analy=non_app_issues_analy,
          skipped_test_dif=skipped_test_dif,
          test_avg_dur_data=test_avg_dur_data,
          db_name=db)
@@ -271,10 +277,10 @@ def hsdashboardRecentFive(db):
         cursor.execute("SELECT eid, pass, fail, etime, skip from rfarchive.hsexecution WHERE pid=%s order by eid desc LIMIT 5;" % db)
         exe_id_filter_data = cursor.fetchall()
 
-        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid>'%s' GROUP BY assigned AND pid=%s;" % (exe_info[-1][0], db))
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND eid>'%s' AND pid=%s GROUP BY assigned;" % (exe_info[-1][0], db))
         fail_counts = cursor.fetchall()
 
-        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND comment IS NULL AND eid>'%s' GROUP BY assigned AND pid=%s;" % (exe_info[-1][0], db))
+        cursor.execute("SELECT assigned, COUNT(*) from rfarchive.hstest WHERE status='FAIL' AND comment IS NULL AND eid>'%s' AND pid=%s GROUP BY assigned;" % (exe_info[-1][0], db))
         fail_counts_analy = cursor.fetchall()
 
         # new tests
