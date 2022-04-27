@@ -44,7 +44,7 @@ def rfhistoric_reparser(opts):
 
     # get latest execution id
     if opts.executionid == "latest":
-        result_id = get_latest_execution_id(rootdb)
+        result_id = get_latest_execution_id(rootdb, opts.projectid)
     else:
         result_id = opts.executionid
 
@@ -91,9 +91,9 @@ def connect_to_mysql_db(host, user, pwd, db):
     except Exception as e:
         print(e)
     
-def get_latest_execution_id(con):
+def get_latest_execution_id(con, pid):
     cursorObj = con.cursor()
-    cursorObj.execute("SELECT eid FROM rfarchive.hsexecution ORDER BY eid DESC LIMIT 1;")
+    cursorObj.execute("SELECT eid FROM rfarchive.hsexecution WHERE pid=%s ORDER BY eid DESC LIMIT 1;" % (pid))
     rows = cursorObj.fetchone()
     return rows[0]
 
