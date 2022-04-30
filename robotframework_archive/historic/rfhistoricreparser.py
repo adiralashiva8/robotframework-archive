@@ -118,7 +118,7 @@ def update_execution_table(con, eid, pid):
     cursorObj.execute(sql)
     con.commit()
 
-    cursorObj.execute("SELECT eid, pass, total FROM rfarchive.hsexecution ORDER BY eid DESC LIMIT 1;")
+    cursorObj.execute("SELECT eid, pass, total FROM rfarchive.hsexecution WHERE eid=%s;" % (eid))
     rows = cursorObj.fetchone()
     # update rfarchive.TB_PROJECT table
     cursorObj.execute("UPDATE rfarchive.hsproject SET updated = now(), total = %s, percentage =%s WHERE pid='%s';" % (rows[2], float("{0:.2f}".format((rows[1]/rows[2]*100))), pid))
