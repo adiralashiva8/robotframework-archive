@@ -506,7 +506,7 @@ def hssearch(db):
 def hsflaky(db):
     cursor = mysql.connection.cursor()
     # use_db(cursor, db)
-    cursor.execute("SELECT eid from ( SELECT eid from rfarchive.hsexecution ORDER BY eid DESC LIMIT 5 ) as tmp ORDER BY eid ASC LIMIT 1;")
+    cursor.execute("SELECT eid from ( SELECT eid from rfarchive.hsexecution WHERE pid=%s ORDER BY eid DESC LIMIT 5 ) as tmp ORDER BY eid ASC LIMIT 1;" % db)
     last_five = cursor.fetchall()
     cursor.execute("SELECT eid from rfarchive.hsexecution WHERE pid=%s ORDER BY eid DESC LIMIT 5;" % db)
     last_five_ids = cursor.fetchall()
